@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% set title = (article.title or "Article") %}
+{% set body_class = "chat-light" %}
+
+{% block content %}
+<div class="wp-shell">
+  <header class="wp-topbar">
+    <div class="wp-topbar-left">
+      <a class="wp-icon-btn" href="{{ url_for('main.chat') }}" aria-label="Back to search" title="Back">
+        <span class="wp-hamburger">←</span>
+      </a>
+    </div>
+
+    <div class="wp-topbar-center">
+      <div class="wp-brand">
+        <div class="wp-brand-name">The Ledger</div>
+        <div class="wp-brand-tag">Your world, recorded</div>
+      </div>
+    </div>
+
+    <div class="wp-topbar-right">
+      <a class="wp-pill wp-subscribe" href="#" role="button">Subscribe</a>
+      <a class="wp-link" href="#">Sign in</a>
+    </div>
+  </header>
+
+  <main class="wp-article">
+    <article class="wp-article-card">
+      <header class="wp-article-header">
+        <h1 class="wp-article-title">{{ article.title }}</h1>
+        <div class="wp-article-meta">
+          {% set bits = [] %}
+          {% if article.domain %}{% set _ = bits.append(article.domain) %}{% endif %}
+          {% if article.topic %}{% set _ = bits.append(article.topic) %}{% endif %}
+          {% if article.date %}{% set _ = bits.append(article.date) %}{% endif %}
+          {% if article.author %}{% set _ = bits.append(article.author) %}{% endif %}
+          {% if article.location %}{% set _ = bits.append(article.location) %}{% endif %}
+          {% if article.country %}{% set _ = bits.append(article.country) %}{% endif %}
+          {{ bits | join(" • ") }}
+        </div>
+      </header>
+
+      {% if article.summery %}
+      <section class="wp-article-section">
+        <h2 class="wp-article-h2">Summary</h2>
+        <div class="wp-article-text">{{ article.summery }}</div>
+      </section>
+      {% endif %}
+
+      {% if article.details or article.body %}
+      <section class="wp-article-section">
+        <h2 class="wp-article-h2">Details</h2>
+        <div class="wp-article-text">{{ article.details or article.body }}</div>
+      </section>
+      {% endif %}
+
+      {% set refs = article.references or [] %}
+      {% if refs or article.reference1 or article.reference2 %}
+      <section class="wp-article-section">
+        <h2 class="wp-article-h2">References</h2>
+        <ul class="wp-article-refs">
+          {% if article.reference1 %}<li><a href="{{ article.reference1 }}" target="_blank" rel="noreferrer">{{ article.reference1 }}</a></li>{% endif %}
+          {% if article.reference2 %}<li><a href="{{ article.reference2 }}" target="_blank" rel="noreferrer">{{ article.reference2 }}</a></li>{% endif %}
+          {% for u in refs %}
+            {% if u %}<li><a href="{{ u }}" target="_blank" rel="noreferrer">{{ u }}</a></li>{% endif %}
+          {% endfor %}
+        </ul>
+      </section>
+      {% endif %}
+    </article>
+  </main>
+</div>
+{% endblock %}

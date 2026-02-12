@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% set title = "NewsCorp • Home" %}
+
+{% block content %}
+<header class="site-header">
+    <div class="container header-inner">
+        <div class="brand">
+            <div class="brand-mark">NC</div>
+            <div class="brand-text">
+                <div class="brand-name">NewsCorp</div>
+                <div class="brand-tag">Local • National • World</div>
+            </div>
+        </div>
+        <nav class="nav">
+            <a href="#" class="nav-link">Home</a>
+            <a href="#" class="nav-link">Politics</a>
+            <a href="#" class="nav-link">Business</a>
+            <a href="#" class="nav-link">Sports</a>
+            <a href="#" class="nav-link">Culture</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+    <section class="hero">
+        <div class="hero-card">
+            <h1>Today’s top stories</h1>
+            <p class="muted">
+                This is a demo homepage that mimics a news site layout. The floating chat icon at the bottom-right
+                takes users to the chat interface.
+            </p>
+            <div class="hero-grid">
+                <article class="story">
+                    <div class="story-kicker">Breaking</div>
+                    <div class="story-title">City council debates housing reforms amid rising rents</div>
+                    <div class="story-meta">Updated 18 minutes ago • Local</div>
+                </article>
+                <article class="story">
+                    <div class="story-kicker">Analysis</div>
+                    <div class="story-title">What the latest market moves mean for everyday investors</div>
+                    <div class="story-meta">Updated 1 hour ago • Business</div>
+                </article>
+                <article class="story">
+                    <div class="story-kicker">Sports</div>
+                    <div class="story-title">Underdog clinches playoff berth in dramatic final minutes</div>
+                    <div class="story-meta">Updated 2 hours ago • Sports</div>
+                </article>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Floating Chat Button -->
+<a class="chat-fab" href="{{ url_for('main.chat') }}" aria-label="Open chat" title="Chat with us">
+    <span class="chat-fab-icon">💬</span>
+</a>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% set title = "Ask The Post" %}
+{% set body_class = "chat-light" %}
+
+{% block content %}
+<div class="wp-shell">
+  <header class="wp-topbar">
+    <div class="wp-topbar-left">
+      <button class="wp-icon-btn" type="button" aria-label="Menu">
+        <span class="wp-hamburger">≡</span>
+      </button>
+    </div>
+
+    <div class="wp-topbar-center">
+      <div class="wp-brand">
+        <div class="wp-brand-name">The Ledger</div>
+        <div class="wp-brand-tag">Your world, recorded</div>
+      </div>
+    </div>
+
+    <div class="wp-topbar-right">
+      <a class="wp-pill wp-subscribe" href="#" role="button">Subscribe</a>
+      <a class="wp-link" href="#">Sign in</a>
+    </div>
+  </header>
+
+  <div class="wp-body wp-body-single">
+    <main class="wp-main wp-main-split wp-main-center">
+      <section class="wp-left wp-left-center">
+        <section id="landing" class="wp-landing">
+          <h1 class="wp-greeting">Good morning</h1>
+          <p class="wp-subgreeting">Ask us about today's news.</p>
+
+          <nav class="wp-tabs" aria-label="Prompt categories">
+            <button class="wp-tab active" type="button">Today's news</button>
+            <button class="wp-tab" type="button">Tell me the latest update</button>
+            <button class="wp-tab" type="button">Give me advice</button>
+            <button class="wp-tab" type="button">Help me with</button>
+          </nav>
+
+          <div class="wp-prompts">
+            <button class="wp-prompt" type="button" data-prompt="What are today's top stories?"><span class="wp-sparkle">✦</span><span>What are today's top stories?</span></button>
+            <button class="wp-prompt" type="button" data-prompt="Summarize politics news"><span class="wp-sparkle">✦</span><span>Summarize politics news</span></button>
+            <button class="wp-prompt" type="button" data-prompt="Find related stories about the economy"><span class="wp-sparkle">✦</span><span>Find related stories about the economy</span></button>
+          </div>
+        </section>
+
+        <section id="results" class="wp-results" aria-live="polite"></section>
+
+        <section class="wp-composer">
+          <div class="wp-composer-wrap">
+            <input id="chatInput" class="wp-input" type="text" placeholder="What do you want to know?" autocomplete="off" />
+            <button id="sendBtn" class="wp-send" type="button" aria-label="Send"><span class="wp-send-icon">▮▮▮</span></button>
+          </div>
+          <div id="meta" class="wp-meta"></div>
+          <div class="wp-disclaimer">
+            Answers are AI generated from indexed reporting in your local PDF. Because AI can make mistakes, verify information using the included references.
+          </div>
+        </section>
+      </section>
+
+      <aside id="detailPanel" class="wp-right hidden collapsed" aria-label="Article summary">
+        <div class="wp-right-header">
+          <div class="wp-right-title">Article</div>
+          <button id="togglePanelBtn" class="wp-right-toggle" type="button" aria-label="Collapse">Collapse</button>
+        </div>
+        <div id="detailBody" class="wp-right-body">
+          <div class="wp-right-empty">Select an article title to see the summary.</div>
+        </div>
+      </aside>
+    </main>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/agentic_ui.js') }}"></script>
+{% endblock %}

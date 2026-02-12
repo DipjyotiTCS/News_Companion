@@ -1,0 +1,2 @@
+This version switches to langchain-chroma (import langchain_chroma) and uses Document-based ingestion.
+If you have an existing chroma_db/ from older runs, delete it to avoid metadata incompatibilities.
