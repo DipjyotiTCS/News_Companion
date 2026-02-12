@@ -1,0 +1,16 @@
+flask
+python-dotenv
+neo4j
+pymupdf
+langchain>=0.2.9
+langchain-openai
+langchain-community
+langchain-chroma>=0.1.0
+chromadb>=0.4.24
+Flask==3.0.3
+python-dotenv==1.0.1
+langgraph==0.2.25
+neo4j==5.23.1
+PyMuPDF==1.24.9
+flask-cors==4.0.1
+requests==2.32.3
