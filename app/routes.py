@@ -7,6 +7,7 @@ from app.services.serpapi_service import (
     build_interesting_facts,
     llm_timeline_events,
     llm_interesting_facts,
+    llm_longform_analysis,
 )
 
 bp = Blueprint("main", __name__)
@@ -140,3 +141,37 @@ def api_interesting_facts():
             return jsonify(facts)
         except Exception as e:
             return jsonify({"error": f"Facts generation failed: {e}"}), 500
+
+
+@bp.post("/api/longform-analysis")
+def api_longform_analysis():
+    """
+    Payload:
+      {
+        "title": "...",
+        "description": "...",
+        "topic": "..."
+      }
+
+    Response:
+      {
+        "what_happened": "...",
+        "impact_analysis": "...",
+        "historical_context": "...",
+        "why_it_matters": "...",
+        "future_outlook": "..."
+      }
+    """
+    data = request.get_json(silent=True) or {}
+    title = (data.get("title") or "").strip()
+    description = (data.get("description") or data.get("summary") or data.get("summery") or "").strip()
+    topic = (data.get("topic") or "").strip()
+
+    if not (title or description or topic):
+        return jsonify({"error": "Provide at least one of: title, description, topic"}), 400
+
+    try:
+        analysis = llm_longform_analysis(title=title, description=description, topic=topic)
+        return jsonify(analysis)
+    except Exception as e:
+        return jsonify({"error": f"Longform analysis failed: {e}"}), 500

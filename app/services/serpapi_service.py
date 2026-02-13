@@ -80,6 +80,65 @@ def _extract_json_array(raw: str) -> List[Dict[str, Any]]:
     return out
 
 
+def _extract_json_object(raw: str) -> Dict[str, Any]:
+    """Best-effort extraction of a top-level JSON object from an LLM response."""
+    raw = (raw or "").strip()
+    if not raw:
+        raise ValueError("Empty LLM response")
+
+    # Prefer exact object
+    m = re.search(r"\{[\s\S]*\}", raw)
+    if not m:
+        raise ValueError("Could not find JSON object in LLM response")
+
+    obj = json.loads(m.group(0))
+    if not isinstance(obj, dict):
+        raise ValueError("LLM response is not a JSON object")
+    return obj
+
+
+def llm_longform_analysis(title: str, description: str, topic: str) -> Dict[str, Any]:
+    """Generate a long-form analysis JSON for a news article using LLM."""
+    llm = _llm(0.2)
+    prompt = (
+        "You are an expert news analyst. Produce a long-form analysis based on the given article details.\n"
+        "Perform internal websearch to fetch suitable details for each section. Do NOT limit yourself to the provided details only.\n"
+        "Provide only proven facts citing the source. Do not assume or provide informaiton without fact checking."
+        "Return ONLY valid JSON (no markdown, no extra text) with exactly these keys:\n"
+        "{\n"
+        "  \"what_happened\": \"...\",\n"
+        "  \"impact_analysis\": \"...\",\n"
+        "  \"historical_context\": \"...\",\n"
+        "  \"why_it_matters\": \"...\",\n"
+        "  \"future_outlook\": \"...\"\n"
+        "}\n\n"
+        "Guidelines:\n"
+        "- Add basic HTML tags like paragraph, bold, new line wherever necesarry.\n"
+        "- Be balanced and avoid speculation; if uncertain, clearly say so.\n"
+        "- Keep each section concise but substantive (roughly 80-180 words).\n\n"
+        f"Title: {title}\n"
+        f"Topic: {topic}\n"
+        f"Description: {description}\n"
+    )
+    raw = llm.invoke(prompt).content
+    obj = _extract_json_object(raw)
+
+    # Normalize: ensure required keys exist and values are strings
+    keys = [
+        "what_happened",
+        "impact_analysis",
+        "historical_context",
+        "why_it_matters",
+        "future_outlook",
+    ]
+    out: Dict[str, str] = {}
+    for k in keys:
+        v = obj.get(k, "")
+        v = re.sub(r"\s+", " ", str(v or "").strip())
+        out[k] = v
+    return out
+
+
 def llm_timeline_events(title: str, summary: str, topic: str, limit: int = 5) -> List[Dict[str, Any]]:
     """Generate timeline events using LLM. Must return ISO timestamps."""
     llm = _llm(0.0)
