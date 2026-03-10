@@ -1,3 +1,8 @@
+import hashlib
+import json
+import time
+import threading
+
 from flask import Blueprint, render_template, request, jsonify, abort
 from app.ai.graph import run_agent
 from app.services.neo4j_service import Neo4jService
@@ -11,6 +16,15 @@ from app.services.serpapi_service import (
 )
 
 bp = Blueprint("main", __name__)
+
+_query_cache: dict[str, tuple[dict, float]] = {}  # key -> (response, expires_at)
+_query_cache_lock = threading.Lock()
+_CACHE_TTL = 600  # 10 minutes
+
+
+def _cache_key(body: dict) -> str:
+    canonical = json.dumps(body, sort_keys=True, ensure_ascii=False)
+    return hashlib.sha256(canonical.encode()).hexdigest()
 
 @bp.get("/")
 def home():
@@ -54,10 +68,24 @@ def api_query():
     q = (data.get("message") or "").strip()
     if not q:
         return jsonify({"error": "Empty message"}), 400
+
+    key = _cache_key(data)
+    now = time.monotonic()
+
+    with _query_cache_lock:
+        cached = _query_cache.get(key)
+        if cached and cached[1] > now:
+            return jsonify(cached[0])
+
     try:
-        return jsonify(run_agent(q))
+        result = run_agent(q)
     except Exception as e:
         return jsonify({"error": f"Agent failed: {e}"}), 500
+
+    with _query_cache_lock:
+        _query_cache[key] = (result, now + _CACHE_TTL)
+
+    return jsonify(result)
 
 
 @bp.post("/api/timeline")
